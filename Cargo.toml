@@ -1,0 +1,22 @@
+[package]
+name = "dosnap"
+version = "0.1.0"
+authors = ["Wang Ruochen <wrc@ruo-chen.wang>"]
+edition = "2018"
+description = "automatically manage btrfs snapshots"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+anyhow = "1.0"
+
+chrono = "0.4"
+nix = "0.19"
+tempfile = "3.1"
+
+clap = "2.33"
+serde = { version = "1.0", features = ["derive"] }
+toml = "0.5"
+
+env_logger = "0.8"
+log = "0.4"
