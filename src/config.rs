@@ -1,7 +1,5 @@
 use serde::{Deserialize, Deserializer};
 use std::collections::HashMap;
-use std::fs::File;
-use std::io::Read;
 use std::path::PathBuf;
 
 type SubvolMap = HashMap<String, PathBuf>;
@@ -35,8 +33,6 @@ fn suffix_default() -> String {
 }
 
 pub fn get_config(file: &str) -> anyhow::Result<Config> {
-    let mut config_file = File::open(file)?;
-    let mut buf = String::new();
-    config_file.read_to_string(&mut buf)?;
+    let buf = std::fs::read_to_string(file)?;
     Ok(toml::from_str(&buf)?)
 }
