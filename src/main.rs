@@ -1,6 +1,6 @@
+mod action;
 mod cli;
 mod config;
-mod create;
 mod util;
 
 use anyhow::Context;
@@ -51,8 +51,14 @@ fn main() -> anyhow::Result<()> {
     }
     let (cwd, tempdir) = setup(&config).context("Setup failed")?;
 
-    if let Some(matches) = opts.subcommand_matches("create") {
-        create::create(&config, &matches).context("create failed")?;
+    match opts.subcommand() {
+        ("create", Some(matches)) => {
+            action::create(&config, matches).context("Create failed")?;
+        }
+        ("clean", Some(matches)) => {
+            action::clean(&config, matches).context("Clean failed")?;
+        }
+        _ => {}
     }
 
     env::set_current_dir(&cwd)?;

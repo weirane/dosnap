@@ -10,12 +10,39 @@ pub fn build_cli() -> App<'static, 'static> {
         .subcommand(
             SubCommand::with_name("create")
                 .about("Creates a snapshot")
+                .arg(
+                    Arg::with_name("SUFFIX")
+                        .short("s")
+                        .long("suffix")
+                        .default_value("-auto")
+                        .help("Suffix of the snapshot name"),
+                )
                 .arg_from_usage("<filesystem>... 'Filesystems to snapshot'"),
         )
         .subcommand(
             SubCommand::with_name("clean")
                 .about("Cleans the snapshots")
-                .arg_from_usage("-n, --nkeep=[NUM] 'Keep n snapshots'"),
+                .arg(
+                    Arg::with_name("SUFFIX")
+                        .short("s")
+                        .long("suffix")
+                        .default_value("-auto")
+                        .help("Suffix of the snapshot name"),
+                )
+                .arg(
+                    Arg::with_name("DRYRUN")
+                        .short("d")
+                        .long("dry-run")
+                        .help("Don't actually perform the deletion"),
+                )
+                .arg(
+                    Arg::with_name("NKEEP")
+                        .short("n")
+                        .long("nkeep")
+                        .takes_value(true)
+                        .help("Keep n snapshots"),
+                )
+                .arg_from_usage("<filesystem> 'Filesystem to clean'"),
         )
         .subcommand(
             SubCommand::with_name("completion")
