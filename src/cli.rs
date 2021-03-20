@@ -9,17 +9,17 @@ pub fn build_cli() -> App<'static, 'static> {
         .arg_from_usage("-c, --config=[FILE] 'Sets a custom config file'")
         .subcommand(
             SubCommand::with_name("create")
-                .about("create a snapshot")
-                .arg_from_usage("<filesystem>... 'filesystems to snapshot'"),
+                .about("Creates a snapshot")
+                .arg_from_usage("<filesystem>... 'Filesystems to snapshot'"),
         )
         .subcommand(
             SubCommand::with_name("clean")
-                .about("clean snapshots")
+                .about("Cleans the snapshots")
                 .arg_from_usage("-n, --nkeep=[NUM] 'Keep n snapshots'"),
         )
         .subcommand(
             SubCommand::with_name("completion")
-                .about("generate completion")
+                .about("Generate completion")
                 .arg(
                     Arg::with_name("SHELL")
                         .short("s")
@@ -27,7 +27,7 @@ pub fn build_cli() -> App<'static, 'static> {
                         .takes_value(true)
                         .required(true)
                         .possible_values(&["bash", "fish", "zsh", "powershell", "elvish"])
-                        .help("generate completion for SHELL"),
+                        .help("Generate completion for SHELL"),
                 ),
         )
 }

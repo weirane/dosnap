@@ -23,7 +23,7 @@ pub fn create(config: &Config, matches: &clap::ArgMatches) -> Result<()> {
     let name = format!("{}{}", now, config.suffix);
     let to_snap = matches.values_of("filesystem").unwrap();
     for (mnt_point, subv) in to_snap.flat_map(|fs| config.subvolumes.get_key_value(fs)) {
-        log::info!("snapshoting {}", mnt_point);
+        log::info!("Snapshoting {}", mnt_point);
         let path = escape_slash(mnt_point);
         make_snapshot(config, subv, &path, &name)?;
     }

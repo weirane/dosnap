@@ -44,12 +44,12 @@ fn main() -> anyhow::Result<()> {
     }
 
     let config = get_config(opts.value_of("config").unwrap_or("/etc/dosnap.toml"))
-        .context("get config failed")?;
+        .context("Get config failed")?;
     if !nix::unistd::geteuid().is_root() {
         eprintln!("Please run as root");
         std::process::exit(1);
     }
-    let (cwd, tempdir) = setup(&config).context("setup failed")?;
+    let (cwd, tempdir) = setup(&config).context("Setup failed")?;
 
     if let Some(matches) = opts.subcommand_matches("create") {
         create::create(&config, &matches).context("create failed")?;
