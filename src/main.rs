@@ -53,10 +53,20 @@ fn main() -> anyhow::Result<()> {
 
     match opts.subcommand() {
         ("create", Some(matches)) => {
-            action::create(&config, matches).context("Create failed")?;
+            let suffix = matches.value_of("SUFFIX").unwrap();
+            let filesystem = matches.value_of("filesystem").unwrap();
+            action::create(&config, suffix, filesystem).context("Create failed")?;
         }
         ("clean", Some(matches)) => {
-            action::clean(&config, matches).context("Clean failed")?;
+            let nkeep: usize = matches
+                .value_of("NKEEP")
+                .unwrap()
+                .parse()
+                .context("Cannot parse nkeep")?;
+            let filesystem = matches.value_of("filesystem").unwrap();
+            let suffix = matches.value_of("SUFFIX").unwrap();
+            let dryrun = matches.is_present("DRYRUN");
+            action::clean(&config, suffix, filesystem, nkeep, dryrun).context("Clean failed")?;
         }
         _ => {}
     }

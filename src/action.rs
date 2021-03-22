@@ -22,30 +22,27 @@ fn make_snapshot(config: &Config, subvol: &Path, path_escape: &str, name: &str) 
     run_cmd(&[&"btrfs", &"subvolume", &"snapshot", &"-r", &subvol, &dst])
 }
 
-pub fn create(config: &Config, matches: &clap::ArgMatches) -> Result<()> {
+pub fn create(config: &Config, suffix: &str, filesystem: &str) -> Result<()> {
     let now = chrono::offset::Local::now().format(DATE_FORMAT);
-    let suffix = matches.value_of("SUFFIX").unwrap();
     let name = format!("{}{}", now, suffix);
-    let mnt_point = matches.value_of("filesystem").unwrap();
     let subv = config
         .subvolumes
-        .get(mnt_point)
-        .with_context(|| format!("Filesystem {} not found in config", mnt_point))?;
-    log::info!("Snapshoting {}", mnt_point);
-    let path = escape_slash(mnt_point);
+        .get(filesystem)
+        .with_context(|| format!("Filesystem {} not found in config", filesystem))?;
+    log::info!("Snapshoting {}", filesystem);
+    let path = escape_slash(filesystem);
     make_snapshot(config, subv, &path, &name)?;
     Ok(())
 }
 
-pub fn clean(config: &Config, matches: &clap::ArgMatches) -> Result<()> {
-    let to_clean = matches.value_of("filesystem").unwrap();
-    let nkeep: usize = matches
-        .value_of("NKEEP")
-        .unwrap()
-        .parse()
-        .context("Cannot parse nkeep")?;
-    let subdir = config.snapshot_root.join(escape_slash(to_clean));
-    let suffix = matches.value_of("SUFFIX").unwrap();
+pub fn clean(
+    config: &Config,
+    suffix: &str,
+    filesystem: &str,
+    nkeep: usize,
+    dryrun: bool,
+) -> Result<()> {
+    let subdir = config.snapshot_root.join(escape_slash(filesystem));
     let mut snap_date: Vec<_> = fs::read_dir(&subdir)
         .context("Cannot read btrfs temp mountpoint")?
         .filter_map(|d| match d {
@@ -64,7 +61,6 @@ pub fn clean(config: &Config, matches: &clap::ArgMatches) -> Result<()> {
         .context("Cannot read subdirectory of btrfs temp mountpoint")?;
     if snap_date.len() > nkeep {
         snap_date.sort_by(|(_, d1), (_, d2)| d1.cmp(d2).reverse());
-        let dryrun = matches.is_present("DRYRUN");
         for path in snap_date.iter().skip(nkeep).map(|s| &s.0) {
             if !dryrun {
                 run_cmd(&[&"btrfs", &"subvolume", &"delete", path])?;
