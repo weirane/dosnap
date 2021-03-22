@@ -1,6 +1,6 @@
 use anyhow::{Context, Result};
 use chrono::NaiveDateTime;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::{fs, io};
 
 use crate::config::Config;
@@ -34,14 +34,7 @@ pub fn create(config: &Config, suffix: &str, filesystem: &str) -> Result<()> {
     Ok(())
 }
 
-pub fn clean(
-    config: &Config,
-    suffix: &str,
-    filesystem: &str,
-    nkeep: usize,
-    dryrun: bool,
-) -> Result<()> {
-    let subdir = config.snapshot_root.join(escape_slash(filesystem));
+fn sorted_suffixed_snap_date(subdir: &Path, suffix: &str) -> Result<Vec<(PathBuf, NaiveDateTime)>> {
     let mut snap_date: Vec<_> = fs::read_dir(&subdir)
         .context("Cannot read btrfs temp mountpoint")?
         .filter_map(|d| match d {
@@ -58,8 +51,20 @@ pub fn clean(
         })
         .collect::<io::Result<_>>()
         .context("Cannot read subdirectory of btrfs temp mountpoint")?;
+    snap_date.sort_by(|(_, d1), (_, d2)| d1.cmp(d2).reverse());
+    Ok(snap_date)
+}
+
+pub fn clean(
+    config: &Config,
+    suffix: &str,
+    filesystem: &str,
+    nkeep: usize,
+    dryrun: bool,
+) -> Result<()> {
+    let subdir = config.snapshot_root.join(escape_slash(filesystem));
+    let snap_date = sorted_suffixed_snap_date(&subdir, suffix)?;
     if snap_date.len() > nkeep {
-        snap_date.sort_by(|(_, d1), (_, d2)| d1.cmp(d2).reverse());
         for path in snap_date.iter().skip(nkeep).map(|s| &s.0) {
             if !dryrun {
                 run_cmd(&[&"btrfs", &"subvolume", &"delete", path])?;
