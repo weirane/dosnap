@@ -30,8 +30,7 @@ pub fn create(config: &Config, suffix: &str, filesystem: &str) -> Result<()> {
         .get(filesystem)
         .with_context(|| format!("Filesystem {} not found in config", filesystem))?;
     log::info!("Snapshoting {}", filesystem);
-    let path = escape_slash(filesystem);
-    make_snapshot(config, subv, &path, &name)?;
+    make_snapshot(config, &subv.path, &subv.escaped_mountpoint(), &name)?;
     Ok(())
 }
 

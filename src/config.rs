@@ -2,19 +2,23 @@ use serde::{Deserialize, Deserializer};
 use std::collections::HashMap;
 use std::path::PathBuf;
 
-type SubvolMap = HashMap<String, PathBuf>;
+type SubvolMap = HashMap<String, Subvolume>;
 
 #[derive(Debug, Deserialize)]
-struct Subvolume {
-    mountpoint: String,
-    path: PathBuf,
+pub struct Subvolume {
+    pub mountpoint: String,
+    pub path: PathBuf,
+}
+
+impl Subvolume {
+    pub fn escaped_mountpoint(&self) -> String {
+        crate::util::escape_slash(&self.mountpoint)
+    }
 }
 
 fn deserialize_subv<'a, D: Deserializer<'a>>(d: D) -> Result<SubvolMap, D::Error> {
-    use std::iter::FromIterator;
     let mut subvs = <Vec<Subvolume>>::deserialize(d)?;
-    let ret = HashMap::from_iter(subvs.drain(..).map(|x| (x.mountpoint, x.path)));
-    Ok(ret)
+    Ok(subvs.drain(..).map(|x| (x.mountpoint.clone(), x)).collect())
 }
 
 #[derive(Debug, Deserialize)]
