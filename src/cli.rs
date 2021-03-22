@@ -17,7 +17,7 @@ pub fn build_cli() -> App<'static, 'static> {
                         .default_value("-auto")
                         .help("Suffix of the snapshot name"),
                 )
-                .arg_from_usage("<filesystem>... 'Filesystems to snapshot'"),
+                .arg_from_usage("<filesystem> 'Filesystems to snapshot'"),
         )
         .subcommand(
             SubCommand::with_name("clean")

@@ -26,12 +26,14 @@ pub fn create(config: &Config, matches: &clap::ArgMatches) -> Result<()> {
     let now = chrono::offset::Local::now().format(DATE_FORMAT);
     let suffix = matches.value_of("SUFFIX").unwrap();
     let name = format!("{}{}", now, suffix);
-    let to_snap = matches.values_of("filesystem").unwrap();
-    for (mnt_point, subv) in to_snap.flat_map(|fs| config.subvolumes.get_key_value(fs)) {
-        log::info!("Snapshoting {}", mnt_point);
-        let path = escape_slash(mnt_point);
-        make_snapshot(config, subv, &path, &name)?;
-    }
+    let mnt_point = matches.value_of("filesystem").unwrap();
+    let subv = config
+        .subvolumes
+        .get(mnt_point)
+        .with_context(|| format!("Filesystem {} not found in config", mnt_point))?;
+    log::info!("Snapshoting {}", mnt_point);
+    let path = escape_slash(mnt_point);
+    make_snapshot(config, subv, &path, &name)?;
     Ok(())
 }
 
