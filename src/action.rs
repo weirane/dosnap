@@ -45,7 +45,7 @@ fn sorted_suffixed_snap_date(subdir: &Path, suffix: &str) -> Result<Vec<(PathBuf
                     .ends_with(suffix)
                     .then(|| name.trim_end_matches(suffix))?;
                 let date = NaiveDateTime::parse_from_str(datestr, DATE_FORMAT).ok()?;
-                Some(Ok((path.clone(), date)))
+                Some(Ok((path, date)))
             }
             Err(e) => Some(Err(e)),
         })
