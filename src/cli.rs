@@ -1,6 +1,10 @@
 use clap::{App, AppSettings, Arg, SubCommand};
 
 pub fn build_cli() -> App<'static, 'static> {
+    let dryrun = Arg::with_name("DRYRUN")
+        .short("d")
+        .long("dry-run")
+        .help("Don't actually perform the deletion");
     App::new(env!("CARGO_PKG_NAME"))
         .setting(AppSettings::ArgRequiredElseHelp)
         .setting(AppSettings::DisableHelpSubcommand)
@@ -17,7 +21,7 @@ pub fn build_cli() -> App<'static, 'static> {
                         .default_value("-manual")
                         .help("Suffix of the snapshot name"),
                 )
-                .arg_from_usage("<filesystem> 'Filesystems to snapshot'"),
+                .arg_from_usage("<filesystem> 'Filesystem to snapshot'"),
         )
         .subcommand(
             SubCommand::with_name("clean")
@@ -26,14 +30,9 @@ pub fn build_cli() -> App<'static, 'static> {
                     Arg::with_name("SUFFIX")
                         .short("s")
                         .long("suffix")
-                        .default_value("-auto")
+                        .required(true)
+                        .takes_value(true)
                         .help("Suffix of the snapshot name"),
-                )
-                .arg(
-                    Arg::with_name("DRYRUN")
-                        .short("d")
-                        .long("dry-run")
-                        .help("Don't actually perform the deletion"),
                 )
                 .arg(
                     Arg::with_name("NKEEP")
@@ -42,6 +41,13 @@ pub fn build_cli() -> App<'static, 'static> {
                         .takes_value(true)
                         .help("Keep n snapshots"),
                 )
+                .arg(&dryrun)
+                .arg_from_usage("<filesystem> 'Filesystem to clean'"),
+        )
+        .subcommand(
+            SubCommand::with_name("autoclean")
+                .about("Auto clean according to the limits")
+                .arg(&dryrun)
                 .arg_from_usage("<filesystem> 'Filesystem to clean'"),
         )
         .subcommand(
@@ -56,17 +62,6 @@ pub fn build_cli() -> App<'static, 'static> {
                         .possible_values(&["bash", "fish", "zsh", "powershell", "elvish"])
                         .help("Generate completion for SHELL"),
                 ),
-        )
-        .subcommand(
-            SubCommand::with_name("autoclean")
-                .about("Auto clean according to the limits")
-                .arg(
-                    Arg::with_name("DRYRUN")
-                        .short("d")
-                        .long("dry-run")
-                        .help("Don't actually perform the deletion"),
-                )
-                .arg_from_usage("<filesystem> 'Filesystem to clean'"),
         )
 }
 
