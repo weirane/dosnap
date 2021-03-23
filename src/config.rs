@@ -43,7 +43,7 @@ pub struct Config {
 }
 
 fn suffix_default() -> String {
-    String::from("-auto")
+    String::from("-manual")
 }
 
 fn usize_max() -> usize {
