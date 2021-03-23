@@ -52,6 +52,10 @@ fn main() -> anyhow::Result<()> {
     let (cwd, tempdir) = setup(&config).context("Setup failed")?;
 
     match opts.subcommand() {
+        ("list", Some(matches)) => {
+            let filesystem = matches.value_of("filesystem").unwrap();
+            action::list(&config, filesystem).context("List failed")?;
+        }
         ("create", Some(matches)) => {
             let suffix = get_suffix(matches).unwrap();
             let filesystem = matches.value_of("filesystem").unwrap();

@@ -8,6 +8,17 @@ use crate::util::{escape_slash, run_cmd};
 
 const DATE_FORMAT: &str = "%FT%H-%M-%S";
 
+pub fn list(config: &Config, filesystem: &str) -> Result<()> {
+    let subdir = config.snapshot_root.join(escape_slash(filesystem));
+    fs::read_dir(&subdir)
+        .with_context(|| format!("Cannot read sub directory {}", subdir.display()))?
+        .try_for_each::<_, io::Result<()>>(|snap| {
+            println!("{}", snap?.path().display());
+            Ok(())
+        })
+        .with_context(|| format!("Cannot read an entry inside {}", subdir.display()))
+}
+
 fn make_snapshot(config: &Config, subvol: &Path, path_escape: &str, name: &str) -> Result<()> {
     let dst = config.snapshot_root.join(path_escape).join(name);
     if dst.exists() {
@@ -36,7 +47,7 @@ pub fn create(config: &Config, suffix: &str, filesystem: &str) -> Result<()> {
 
 fn sorted_suffixed_snap_date(subdir: &Path, suffix: &str) -> Result<Vec<(PathBuf, NaiveDateTime)>> {
     let mut snap_date: Vec<_> = fs::read_dir(&subdir)
-        .context("Cannot read btrfs temp mountpoint")?
+        .with_context(|| format!("Cannot read sub directory {}", subdir.display()))?
         .filter_map(|d| match d {
             Ok(d) => {
                 let path = d.path();
@@ -50,7 +61,7 @@ fn sorted_suffixed_snap_date(subdir: &Path, suffix: &str) -> Result<Vec<(PathBuf
             Err(e) => Some(Err(e)),
         })
         .collect::<io::Result<_>>()
-        .context("Cannot read subdirectory of btrfs temp mountpoint")?;
+        .with_context(|| format!("Cannot read an entry inside {}", subdir.display()))?;
     snap_date.sort_by(|(_, d1), (_, d2)| d1.cmp(d2).reverse());
     Ok(snap_date)
 }

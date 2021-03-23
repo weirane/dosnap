@@ -8,9 +8,15 @@ pub fn build_cli() -> App<'static, 'static> {
     App::new(env!("CARGO_PKG_NAME"))
         .setting(AppSettings::ArgRequiredElseHelp)
         .setting(AppSettings::DisableHelpSubcommand)
+        .setting(AppSettings::VersionlessSubcommands)
         .version(env!("CARGO_PKG_VERSION"))
         .about(env!("CARGO_PKG_DESCRIPTION"))
         .arg_from_usage("-c, --config=[FILE] 'Sets a custom config file'")
+        .subcommand(
+            SubCommand::with_name("list")
+                .about("List snapshots of a filesystem")
+                .arg_from_usage("<filesystem> 'Filesystem to list'"),
+        )
         .subcommand(
             SubCommand::with_name("create")
                 .about("Creates a snapshot")
