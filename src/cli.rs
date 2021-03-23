@@ -14,7 +14,7 @@ pub fn build_cli() -> App<'static, 'static> {
                     Arg::with_name("SUFFIX")
                         .short("s")
                         .long("suffix")
-                        .default_value("-auto")
+                        .default_value("-manual")
                         .help("Suffix of the snapshot name"),
                 )
                 .arg_from_usage("<filesystem> 'Filesystems to snapshot'"),

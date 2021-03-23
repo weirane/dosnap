@@ -36,14 +36,8 @@ pub struct Config {
     pub device: PathBuf,
     pub mount_option: Vec<String>,
     pub snapshot_root: PathBuf,
-    #[serde(default = "suffix_default")]
-    pub suffix: String,
     #[serde(deserialize_with = "deserialize_subv")]
     pub subvolumes: SubvolMap,
-}
-
-fn suffix_default() -> String {
-    String::from("-manual")
 }
 
 fn usize_max() -> usize {
