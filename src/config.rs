@@ -8,6 +8,16 @@ type SubvolMap = HashMap<String, Subvolume>;
 pub struct Subvolume {
     pub mountpoint: String,
     pub path: PathBuf,
+    #[serde(default = "usize_max")]
+    pub hourly_limit: usize,
+    #[serde(default = "usize_max")]
+    pub daily_limit: usize,
+    #[serde(default = "usize_max")]
+    pub weekly_limit: usize,
+    #[serde(default = "usize_max")]
+    pub monthly_limit: usize,
+    #[serde(default = "usize_max")]
+    pub yearly_limit: usize,
 }
 
 impl Subvolume {
@@ -34,6 +44,10 @@ pub struct Config {
 
 fn suffix_default() -> String {
     String::from("-auto")
+}
+
+fn usize_max() -> usize {
+    usize::MAX
 }
 
 pub fn get_config(file: &str) -> anyhow::Result<Config> {

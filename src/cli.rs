@@ -57,6 +57,17 @@ pub fn build_cli() -> App<'static, 'static> {
                         .help("Generate completion for SHELL"),
                 ),
         )
+        .subcommand(
+            SubCommand::with_name("autoclean")
+                .about("Auto clean according to the limits")
+                .arg(
+                    Arg::with_name("DRYRUN")
+                        .short("d")
+                        .long("dry-run")
+                        .help("Don't actually perform the deletion"),
+                )
+                .arg_from_usage("<filesystem> 'Filesystem to clean'"),
+        )
 }
 
 pub fn gen_completion(shell: &str) {

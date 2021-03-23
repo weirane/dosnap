@@ -75,3 +75,61 @@ pub fn clean(
     }
     Ok(())
 }
+
+pub fn autoclean(config: &Config, filesystem: &str, dryrun: bool) -> Result<()> {
+    let subv = config
+        .subvolumes
+        .get(filesystem)
+        .with_context(|| format!("Filesystem {} not found in config", filesystem))?;
+    let subdir = config.snapshot_root.join(escape_slash(filesystem));
+    let snap_date = sorted_suffixed_snap_date(&subdir, "-auto")?;
+
+    let mut num_hourly = 0;
+    let mut num_daily = 0;
+    let mut num_weekly = 0;
+    let mut num_monthly = 0;
+    let mut num_yearly = 0;
+    let mut prev: Option<(&PathBuf, &NaiveDateTime)> = None;
+    for (snap, date) in snap_date.iter() {
+        use chrono::{Datelike, Timelike};
+        macro_rules! is_last_in {
+            ($field:ident) => {
+                prev.map(|(_, prevd)| prevd.$field() != date.$field())
+                    .unwrap_or(true)
+            };
+        }
+
+        let mut keep = false;
+        if num_hourly < subv.hourly_limit && is_last_in!(hour) {
+            num_hourly += 1;
+            keep = true;
+        }
+        if num_daily < subv.daily_limit && is_last_in!(day) {
+            num_daily += 1;
+            keep = true;
+        }
+        if num_weekly < subv.weekly_limit && is_last_in!(weekday) {
+            num_weekly += 1;
+            keep = true;
+        }
+        if num_monthly < subv.monthly_limit && is_last_in!(month) {
+            num_monthly += 1;
+            keep = true;
+        }
+        if num_yearly < subv.yearly_limit && is_last_in!(year) {
+            num_yearly += 1;
+            keep = true;
+        }
+
+        if !keep {
+            if !dryrun {
+                log::info!("Deleting subvolume {}", snap.display());
+                run_cmd(&[&"btrfs", &"subvolume", &"delete", snap])?;
+            } else {
+                eprintln!("Deleting subvolume {}", snap.display());
+            }
+        }
+        prev = Some((snap, date));
+    }
+    Ok(())
+}

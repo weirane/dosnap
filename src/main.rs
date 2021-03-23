@@ -68,6 +68,11 @@ fn main() -> anyhow::Result<()> {
             let dryrun = matches.is_present("DRYRUN");
             action::clean(&config, suffix, filesystem, nkeep, dryrun).context("Clean failed")?;
         }
+        ("autoclean", Some(matches)) => {
+            let filesystem = matches.value_of("filesystem").unwrap();
+            let dryrun = matches.is_present("DRYRUN");
+            action::autoclean(&config, filesystem, dryrun).context("Autoclean failed")?;
+        }
         _ => {}
     }
 
