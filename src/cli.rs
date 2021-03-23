@@ -21,6 +21,11 @@ pub fn build_cli() -> App<'static, 'static> {
                         .default_value("-manual")
                         .help("Suffix of the snapshot name"),
                 )
+                .arg(
+                    Arg::with_name("AUTO")
+                        .long("auto")
+                        .help("Set suffix to '-auto', short for --suffix=-auto"),
+                )
                 .arg_from_usage("<filesystem> 'Filesystem to snapshot'"),
         )
         .subcommand(

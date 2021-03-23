@@ -7,6 +7,15 @@ pub fn escape_slash(path: &str) -> String {
     path.replace("%", "%%").replace("/", "%")
 }
 
+/// Extracts the suffix from an ArgMatches. The AUTO flag is honored.
+pub fn get_suffix<'a>(matches: &'a clap::ArgMatches) -> Option<&'a str> {
+    if matches.is_present("AUTO") {
+        Some("-auto")
+    } else {
+        matches.value_of("SUFFIX")
+    }
+}
+
 pub fn run_cmd(cmd: &[&dyn AsRef<OsStr>]) -> Result<()> {
     let cmd_vec: Vec<_> = cmd.iter().map(|s| s.as_ref().to_string_lossy()).collect();
     log::debug!("executing {:?}", cmd_vec);

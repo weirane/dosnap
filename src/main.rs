@@ -9,7 +9,7 @@ use std::path::PathBuf;
 use tempfile::TempDir;
 
 use crate::config::{get_config, Config};
-use crate::util::run_cmd;
+use crate::util::{get_suffix, run_cmd};
 
 fn setup(config: &Config) -> anyhow::Result<(PathBuf, TempDir)> {
     use nix::sched::{unshare, CloneFlags};
@@ -53,7 +53,7 @@ fn main() -> anyhow::Result<()> {
 
     match opts.subcommand() {
         ("create", Some(matches)) => {
-            let suffix = matches.value_of("SUFFIX").unwrap();
+            let suffix = get_suffix(matches).unwrap();
             let filesystem = matches.value_of("filesystem").unwrap();
             action::create(&config, suffix, filesystem).context("Create failed")?;
         }
@@ -64,7 +64,7 @@ fn main() -> anyhow::Result<()> {
                 .parse()
                 .context("Cannot parse nkeep")?;
             let filesystem = matches.value_of("filesystem").unwrap();
-            let suffix = matches.value_of("SUFFIX").unwrap();
+            let suffix = get_suffix(matches).unwrap();
             let dryrun = matches.is_present("DRYRUN");
             action::clean(&config, suffix, filesystem, nkeep, dryrun).context("Clean failed")?;
         }
