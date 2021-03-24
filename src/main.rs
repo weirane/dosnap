@@ -43,8 +43,7 @@ fn main() -> anyhow::Result<()> {
         return Ok(());
     }
 
-    let config = get_config(opts.value_of("config").unwrap_or("/etc/dosnap.toml"))
-        .context("Get config failed")?;
+    let config = get_config(opts.value_of("config").unwrap()).context("Get config failed")?;
     if !nix::unistd::geteuid().is_root() {
         eprintln!("Please run as root");
         std::process::exit(1);

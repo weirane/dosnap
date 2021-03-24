@@ -6,12 +6,19 @@ pub fn build_cli() -> App<'static, 'static> {
         .long("dry-run")
         .help("Don't actually perform the deletion");
     App::new(env!("CARGO_PKG_NAME"))
-        .setting(AppSettings::ArgRequiredElseHelp)
+        .setting(AppSettings::SubcommandRequiredElseHelp)
         .setting(AppSettings::DisableHelpSubcommand)
         .setting(AppSettings::VersionlessSubcommands)
         .version(env!("CARGO_PKG_VERSION"))
         .about(env!("CARGO_PKG_DESCRIPTION"))
-        .arg_from_usage("-c, --config=[FILE] 'Sets a custom config file'")
+        .arg(
+            Arg::with_name("config")
+                .short("c")
+                .long("config")
+                .value_name("FILE")
+                .default_value("/etc/dosnap.toml")
+                .help("Sets a custom config file"),
+        )
         .subcommand(
             SubCommand::with_name("list")
                 .about("List snapshots of a filesystem")
@@ -59,6 +66,7 @@ pub fn build_cli() -> App<'static, 'static> {
                     Arg::with_name("NKEEP")
                         .short("n")
                         .long("nkeep")
+                        .value_name("NUM")
                         .takes_value(true)
                         .help("Keep n snapshots"),
                 )
