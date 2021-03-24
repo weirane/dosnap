@@ -8,6 +8,7 @@ type SubvolMap = HashMap<String, Subvolume>;
 pub struct Subvolume {
     pub mountpoint: String,
     pub path: PathBuf,
+
     #[serde(default = "usize_max")]
     pub hourly_limit: usize,
     #[serde(default = "usize_max")]
@@ -18,6 +19,9 @@ pub struct Subvolume {
     pub monthly_limit: usize,
     #[serde(default = "usize_max")]
     pub yearly_limit: usize,
+
+    #[serde(default)]
+    pub autoclean: bool,
 }
 
 impl Subvolume {

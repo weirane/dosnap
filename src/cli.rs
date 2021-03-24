@@ -58,8 +58,18 @@ pub fn build_cli() -> App<'static, 'static> {
         .subcommand(
             SubCommand::with_name("autoclean")
                 .about("Auto clean according to the limits")
+                .arg(
+                    Arg::with_name("ALL")
+                        .short("a")
+                        .long("all")
+                        .help("Auto clean all enabled filesystems"),
+                )
                 .arg(&dryrun)
-                .arg_from_usage("<filesystem> 'Filesystem to clean'"),
+                .arg(
+                    Arg::with_name("filesystem")
+                        .required_unless("ALL")
+                        .help("Filesystem to clean"),
+                ),
         )
         .subcommand(
             SubCommand::with_name("completion")
@@ -87,4 +97,23 @@ pub fn gen_completion(shell: &str) {
         _ => panic!("Invalid shell: {}", shell),
     };
     build_cli().gen_completions_to(env!("CARGO_PKG_NAME"), shell, &mut std::io::stdout());
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn autoclean() {
+        // filesystem not required if --all
+        let res = build_cli().get_matches_from_safe(vec!["dosnap", "autoclean", "-ad"]);
+        assert!(res.is_ok());
+
+        // filesystem required if no --all
+        let res = build_cli().get_matches_from_safe(vec!["dosnap", "autoclean", "-d"]);
+        assert_eq!(
+            res.unwrap_err().kind,
+            clap::ErrorKind::MissingRequiredArgument
+        );
+    }
 }

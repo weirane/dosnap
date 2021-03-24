@@ -146,3 +146,11 @@ pub fn autoclean(config: &Config, filesystem: &str, dryrun: bool) -> Result<()> 
     }
     Ok(())
 }
+
+pub fn autoclean_all(config: &Config, dryrun: bool) -> Result<()> {
+    config
+        .subvolumes
+        .values()
+        .filter_map(|sv| sv.autoclean.then(|| &sv.mountpoint))
+        .try_for_each(|fs| autoclean(config, fs, dryrun))
+}
