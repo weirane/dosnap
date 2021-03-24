@@ -78,6 +78,7 @@ pub fn clean(
     if snap_date.len() > nkeep {
         for path in snap_date.iter().skip(nkeep).map(|s| &s.0) {
             if !dryrun {
+                log::info!("Deleting subvolume {}", path.display());
                 run_cmd(&[&"btrfs", &"subvolume", &"delete", path])?;
             } else {
                 eprintln!("Deleting subvolume {}", path.display());
@@ -95,6 +96,7 @@ pub fn autoclean(config: &Config, filesystem: &str, dryrun: bool) -> Result<()> 
     let subdir = config.snapshot_root.join(escape_slash(filesystem));
     let snap_date = sorted_suffixed_snap_date(&subdir, "-auto")?;
 
+    log::info!("Auto cleaning {}", filesystem);
     let mut num_hourly = 0;
     let mut num_daily = 0;
     let mut num_weekly = 0;
