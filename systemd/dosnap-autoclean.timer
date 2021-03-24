@@ -1,0 +1,9 @@
+[Unit]
+Description=Daily Cleanup of dosnap Snapshots
+
+[Timer]
+OnBootSec=10m
+OnUnitActiveSec=1d
+
+[Install]
+WantedBy=timers.target

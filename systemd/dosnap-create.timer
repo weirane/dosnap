@@ -1,0 +1,10 @@
+[Unit]
+Description=Auto Snapshot for dosnap
+
+[Timer]
+OnCalendar=00/2:00
+OnStartupSec=2m
+RandomizedDelaySec=30
+
+[Install]
+WantedBy=timers.target

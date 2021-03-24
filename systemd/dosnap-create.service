@@ -1,0 +1,6 @@
+[Unit]
+Description=Auto Snapshot for dosnap
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/dosnap create --auto --all

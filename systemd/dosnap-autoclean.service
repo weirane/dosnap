@@ -1,0 +1,8 @@
+[Unit]
+Description=Daily Cleanup of dosnap Snapshots
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/dosnap autoclean --all
+IOSchedulingClass=idle
+CPUSchedulingPolicy=idle
