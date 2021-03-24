@@ -32,7 +32,17 @@ pub fn build_cli() -> App<'static, 'static> {
                         .long("auto")
                         .help("Set suffix to '-auto', short for --suffix=-auto"),
                 )
-                .arg_from_usage("<filesystem> 'Filesystem to snapshot'"),
+                .arg(
+                    Arg::with_name("ALL")
+                        .short("a")
+                        .long("all")
+                        .help("Create snapshot for all enabled filesystems"),
+                )
+                .arg(
+                    Arg::with_name("filesystem")
+                        .required_unless("ALL")
+                        .help("Filesystem to snapshot"),
+                ),
         )
         .subcommand(
             SubCommand::with_name("clean")
@@ -102,6 +112,20 @@ pub fn gen_completion(shell: &str) {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn create() {
+        // filesystem not required if --all
+        let res = build_cli().get_matches_from_safe(vec!["dosnap", "create", "-a"]);
+        assert!(res.is_ok());
+
+        // filesystem required if no --all
+        let res = build_cli().get_matches_from_safe(vec!["dosnap", "create"]);
+        assert_eq!(
+            res.unwrap_err().kind,
+            clap::ErrorKind::MissingRequiredArgument
+        );
+    }
 
     #[test]
     fn autoclean() {

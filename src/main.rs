@@ -58,8 +58,12 @@ fn main() -> anyhow::Result<()> {
         }
         ("create", Some(matches)) => {
             let suffix = get_suffix(matches).unwrap();
-            let filesystem = matches.value_of("filesystem").unwrap();
-            action::create(&config, suffix, filesystem).context("Create failed")?;
+            if matches.is_present("ALL") {
+                action::create_all(&config, suffix).context("Createa all failed")?;
+            } else {
+                let filesystem = matches.value_of("filesystem").unwrap();
+                action::create(&config, suffix, filesystem).context("Create failed")?;
+            }
         }
         ("clean", Some(matches)) => {
             let nkeep: usize = matches

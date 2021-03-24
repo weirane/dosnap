@@ -45,6 +45,14 @@ pub fn create(config: &Config, suffix: &str, filesystem: &str) -> Result<()> {
     Ok(())
 }
 
+pub fn create_all(config: &Config, suffix: &str) -> Result<()> {
+    config
+        .subvolumes
+        .values()
+        .filter_map(|sv| sv.create.then(|| &sv.mountpoint))
+        .try_for_each(|fs| create(config, suffix, fs))
+}
+
 fn sorted_suffixed_snap_date(subdir: &Path, suffix: &str) -> Result<Vec<(PathBuf, NaiveDateTime)>> {
     let mut snap_date: Vec<_> = fs::read_dir(&subdir)
         .with_context(|| format!("Cannot read sub directory {}", subdir.display()))?

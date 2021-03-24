@@ -21,6 +21,8 @@ pub struct Subvolume {
     pub yearly_limit: usize,
 
     #[serde(default)]
+    pub create: bool,
+    #[serde(default)]
     pub autoclean: bool,
 }
 
