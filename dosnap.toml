@@ -1,29 +1,35 @@
 # The device to snapshot
 device = "/dev/sda2"
-# Mount options for the device
-mount_option = ["noatime", "compress=zstd", "subvol=/"]
-# Parent directory for all snapshots
+# Mount options for the device. Generally, it should include "subvol=/" if the
+# default subvolume is not the top-level subvolume
+mount_option = ["subvol=/"]
+# Parent directory for all snapshots (relative to top-level)
 snapshot_root = "_snapshots"
+
+[[subvolumes]]
+# Mount point of this subvolume
+filesystem = "/home"
+# Relative path of this subvolume to the top-level
+path = "@home"
+
+# Limits for auto snapshots. Default to usize::MAX
+hourly_limit = 10
+daily_limit = 10
+weekly_limit = 0
+monthly_limit = 10
+yearly_limit = 10
+
+# Include this filesystem in `dosnap create -a`. Defaults to false
+#create = true
+# Include this filesystem in `dosnap autoclean -a`. Defaults to false
+#autoclean = true
 
 [[subvolumes]]
 filesystem = "/"
 path = "@"
 
-hourly_limit = 6
-daily_limit = 3
-weekly_limit = 1
-monthly_limit = 3
-yearly_limit = 2
-
-[[subvolumes]]
-filesystem = "/home"
-path = "@home"
-
-hourly_limit = 6
-daily_limit = 3
-weekly_limit = 1
-monthly_limit = 3
-yearly_limit = 2
-
-create = true
-autoclean = true
+hourly_limit = 10
+daily_limit = 10
+weekly_limit = 0
+monthly_limit = 10
+yearly_limit = 10
