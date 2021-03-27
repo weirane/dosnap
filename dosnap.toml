@@ -6,7 +6,7 @@ mount_option = ["noatime", "compress=zstd", "subvol=/"]
 snapshot_root = "_snapshots"
 
 [[subvolumes]]
-mountpoint = "/"
+filesystem = "/"
 path = "@"
 
 hourly_limit = 6
@@ -16,7 +16,7 @@ monthly_limit = 3
 yearly_limit = 2
 
 [[subvolumes]]
-mountpoint = "/home"
+filesystem = "/home"
 path = "@home"
 
 hourly_limit = 6

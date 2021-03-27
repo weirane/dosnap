@@ -6,7 +6,7 @@ type SubvolMap = HashMap<String, Subvolume>;
 
 #[derive(Debug, Deserialize)]
 pub struct Subvolume {
-    pub mountpoint: String,
+    pub filesystem: String,
     pub path: PathBuf,
 
     #[serde(default = "usize_max")]
@@ -26,15 +26,9 @@ pub struct Subvolume {
     pub autoclean: bool,
 }
 
-impl Subvolume {
-    pub fn escaped_mountpoint(&self) -> String {
-        crate::util::escape_slash(&self.mountpoint)
-    }
-}
-
 fn deserialize_subv<'a, D: Deserializer<'a>>(d: D) -> Result<SubvolMap, D::Error> {
     let mut subvs = <Vec<Subvolume>>::deserialize(d)?;
-    Ok(subvs.drain(..).map(|x| (x.mountpoint.clone(), x)).collect())
+    Ok(subvs.drain(..).map(|x| (x.filesystem.clone(), x)).collect())
 }
 
 #[derive(Debug, Deserialize)]

@@ -41,7 +41,7 @@ pub fn create(config: &Config, suffix: &str, filesystem: &str) -> Result<()> {
         .get(filesystem)
         .with_context(|| format!("Filesystem {} not found in config", filesystem))?;
     log::info!("Snapshoting {}", filesystem);
-    make_snapshot(config, &subv.path, &subv.escaped_mountpoint(), &name)?;
+    make_snapshot(config, &subv.path, &escape_slash(&subv.filesystem), &name)?;
     Ok(())
 }
 
@@ -49,7 +49,7 @@ pub fn create_all(config: &Config, suffix: &str) -> Result<()> {
     config
         .subvolumes
         .values()
-        .filter_map(|sv| sv.create.then(|| &sv.mountpoint))
+        .filter_map(|sv| sv.create.then(|| &sv.filesystem))
         .try_for_each(|fs| create(config, suffix, fs))
 }
 
@@ -159,6 +159,6 @@ pub fn autoclean_all(config: &Config, dryrun: bool) -> Result<()> {
     config
         .subvolumes
         .values()
-        .filter_map(|sv| sv.autoclean.then(|| &sv.mountpoint))
+        .filter_map(|sv| sv.autoclean.then(|| &sv.filesystem))
         .try_for_each(|fs| autoclean(config, fs, dryrun))
 }
