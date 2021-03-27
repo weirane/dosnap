@@ -1,0 +1,29 @@
+# The device to snapshot
+device = "/dev/sda2"
+# Mount options for the device
+mount_option = ["noatime", "compress=zstd", "subvol=/"]
+# Parent directory for all snapshots
+snapshot_root = "_snapshots"
+
+[[subvolumes]]
+mountpoint = "/"
+path = "@"
+
+hourly_limit = 6
+daily_limit = 3
+weekly_limit = 1
+monthly_limit = 3
+yearly_limit = 2
+
+[[subvolumes]]
+mountpoint = "/home"
+path = "@home"
+
+hourly_limit = 6
+daily_limit = 3
+weekly_limit = 1
+monthly_limit = 3
+yearly_limit = 2
+
+create = true
+autoclean = true
