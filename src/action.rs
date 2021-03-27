@@ -129,7 +129,7 @@ pub fn autoclean(config: &Config, filesystem: &str, dryrun: bool) -> Result<()> 
             num_daily += 1;
             keep = true;
         }
-        if num_weekly < subv.weekly_limit && is_last_in!(weekday) {
+        if num_weekly < subv.weekly_limit && is_last_in!(iso_week) {
             num_weekly += 1;
             keep = true;
         }
