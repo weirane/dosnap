@@ -2,7 +2,6 @@
 Description=Daily Cleanup of dosnap Snapshots
 
 [Timer]
-OnBootSec=10m
 OnCalendar=daily
 RandomizedDelaySec=1min
 
