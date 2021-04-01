@@ -89,7 +89,7 @@ pub fn clean(
                 log::info!("Deleting subvolume {}", path.display());
                 run_cmd(&[&"btrfs", &"subvolume", &"delete", path])?;
             } else {
-                eprintln!("Deleting subvolume {}", path.display());
+                eprintln!("Will delete subvolume {}", path.display());
             }
         }
     }
@@ -136,7 +136,7 @@ pub fn autoclean(config: &Config, filesystem: &str, dryrun: bool) -> Result<()> 
                 log::info!("Deleting subvolume {}", snap.display());
                 run_cmd(&[&"btrfs", &"subvolume", &"delete", snap])?;
             } else {
-                eprintln!("Deleting subvolume {}", snap.display());
+                eprintln!("Will delete subvolume {}", snap.display());
             }
         }
         prev = Some((snap, date));
