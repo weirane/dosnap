@@ -120,29 +120,18 @@ pub fn autoclean(config: &Config, filesystem: &str, dryrun: bool) -> Result<()> 
             };
         }
 
-        let mut keep = false;
         if num_hourly < subv.hourly_limit && is_last_in!(hour) {
             num_hourly += 1;
-            keep = true;
-        }
-        if num_daily < subv.daily_limit && is_last_in!(day) {
+        } else if num_daily < subv.daily_limit && is_last_in!(day) {
             num_daily += 1;
-            keep = true;
-        }
-        if num_weekly < subv.weekly_limit && is_last_in!(iso_week) {
+        } else if num_weekly < subv.weekly_limit && is_last_in!(iso_week) {
             num_weekly += 1;
-            keep = true;
-        }
-        if num_monthly < subv.monthly_limit && is_last_in!(month) {
+        } else if num_monthly < subv.monthly_limit && is_last_in!(month) {
             num_monthly += 1;
-            keep = true;
-        }
-        if num_yearly < subv.yearly_limit && is_last_in!(year) {
+        } else if num_yearly < subv.yearly_limit && is_last_in!(year) {
             num_yearly += 1;
-            keep = true;
-        }
-
-        if !keep {
+        } else {
+            // Don't keep this snapshot
             if !dryrun {
                 log::info!("Deleting subvolume {}", snap.display());
                 run_cmd(&[&"btrfs", &"subvolume", &"delete", snap])?;
