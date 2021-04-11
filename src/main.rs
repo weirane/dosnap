@@ -45,8 +45,7 @@ fn main() -> anyhow::Result<()> {
 
     let config = get_config(opts.value_of("config").unwrap()).context("Get config failed")?;
     if !nix::unistd::geteuid().is_root() {
-        eprintln!("Please run as root");
-        std::process::exit(1);
+        anyhow::bail!("Please run as root");
     }
     let (cwd, tempdir) = setup(&config).context("Setup failed")?;
 
