@@ -35,7 +35,9 @@ fn make_snapshot(config: &Config, subvol: &Path, path_escape: &str, name: &str) 
 
 pub fn create(config: &Config, suffix: &str, filesystem: &str) -> Result<()> {
     let now = chrono::offset::Local::now().format(DATE_FORMAT);
-    let name = format!("{}{}", now, suffix);
+    // ensures that suffix begins with a dash
+    let suffix_dash = if suffix.starts_with('-') { "" } else { "-" };
+    let name = format!("{}{}{}", now, suffix_dash, suffix);
     let subv = config
         .subvolumes
         .get(filesystem)
