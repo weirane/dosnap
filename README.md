@@ -11,6 +11,8 @@ discretion. I am not responsible for any data loss caused by dosnap.
 
 ## Installation
 
+Get the `dosnap` binary from [releases][], chmod it and put it in your `$PATH`.
+
 For Arch Linux users, install the binary along with shell completion and systemd
 units from the AUR:
 ```sh
@@ -23,6 +25,8 @@ git clone --depth 1 https://github.com/weirane/dosnap
 cd dosnap
 cargo install --path .
 ```
+
+[releases]: https://github.com/weirane/dosnap/releases
 
 ## Configuration
 
