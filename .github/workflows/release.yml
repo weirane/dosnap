@@ -22,14 +22,21 @@ jobs:
       - name: Build release binary
         run: cargo build --release --locked --verbose
 
+      - name: Build shell completions
+        run: |
+          mkdir completion
+          target/release/dosnap completion --shell zsh >completion/_dosnap
+          target/release/dosnap completion --shell bash >completion/dosnap.bash
+          target/release/dosnap completion --shell fish >completion/dosnap.fish
+
       - name: Strip release binary
         run: strip target/release/dosnap
 
-      - name: Upload binaries to release
-        uses: svenstaro/upload-release-action@v2
+      - name: Release
+        uses: softprops/action-gh-release@v1
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: target/release/dosnap
-          asset_name: dosnap
-          tag: ${{ github.ref }}
-          overwrite: true
+          files: |
+            target/release/dosnap
+            completion/_dosnap
+            completion/dosnap.bash
+            completion/dosnap.fish
