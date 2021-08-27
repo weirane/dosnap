@@ -1,0 +1,35 @@
+name: Release
+on:
+  # schedule:
+  # - cron: '0 0 1 * *' # midnight UTC every month
+
+  push:
+    tags:
+    - 'v[0-9]+.[0-9]+.[0-9]+'
+
+jobs:
+  release:
+    name: Release binaries
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+
+      - name: Build release binary
+        run: cargo build --release --locked --verbose
+
+      - name: Strip release binary
+        run: strip target/release/dosnap
+
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: target/release/dosnap
+          asset_name: dosnap
+          tag: ${{ github.ref }}
+          overwrite: true
